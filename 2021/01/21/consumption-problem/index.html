@@ -13,11 +13,15 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="生产者消者问题问题描述 系统中有一组生产者进程和一组消费者进程，生产者进程每次生产一个产品放入缓冲区，消费者进程每次从缓冲区中取出一个产品并使用。（注:这里的“产品”理解为某种数据) 生产者、消费者共享一个初始为空、大小为n的缓冲区。 只有缓冲区没满时，生产者才能把产品放入缓冲区，否则必须等待。 —&gt; 同步关系 只有缓冲区不空时，消费者才能从中取出产品，否则必须等待。 —&gt; 同步关系">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/01/21/consumption-problem/relation.png">
+<meta property="og:image" content="http://example.com/2021/01/21/consumption-problem/plate.png">
+<meta property="og:image" content="http://example.com/2021/01/21/consumption-problem/event.png">
 <meta property="article:published_time" content="2021-01-21T06:46:43.000Z">
 <meta property="article:modified_time" content="2021-01-22T09:56:26.000Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="system">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/01/21/consumption-problem/relation.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -139,7 +143,7 @@
 <li>对于初学者来说最难的是发现题目中隐含的两对同步关系。</li>
 <li><strong><em>有时候是消费者需要等待生产者生产，有时候是生产者要等待消费者消费</em></strong> ，这是两个不同的“一前一后问题”，因此也需要设置两个同步信号量。</li>
 </ul>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/21/consumption-problem/relation.png" class title="This is an example image"></div>
 
 
 <h1 id="多生产者-多消费者"><a href="#多生产者-多消费者" class="headerlink" title="多生产者-多消费者"></a>多生产者-多消费者</h1><h2 id="问题描述-2"><a href="#问题描述-2" class="headerlink" title="问题描述"></a>问题描述</h2><p>&emsp;&emsp;桌子上有一只盘子，每次只能向其中放入一个水果。爸爸专向盘子中放苹果，妈妈专向盘子中放橘子，儿子专等着吃盘子中的橘子，女儿专等着吃盘子中的苹果。只有盘子空时，爸爸或妈妈才可向盘子中放一个水果。仅当盘子中有自己需要的水果时，儿子或女儿可以从盘子中取出水果。用PV操作实现上述过程。</p>
@@ -165,7 +169,7 @@
 </ol>
 <p>ps:”盘子为空”这个事件可以由儿子或女儿触发，事件发生后才允许父亲或母亲放水果</p>
 <h2 id="如何实现"><a href="#如何实现" class="headerlink" title="如何实现"></a>如何实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">semaphore mutex &#x3D; 1;		&#x2F;&#x2F;实现互斥访问盘子(缓冲区)</span><br><span class="line">semaphore apple &#x3D; 0;		&#x2F;&#x2F;盘子中有几个苹果</span><br><span class="line">semaphore orange &#x3D; 0;		&#x2F;&#x2F;盘子中有几个橘子</span><br><span class="line">semaphore plate &#x3D; 1;		&#x2F;&#x2F;盘子中还可以放多少个水果</span><br><span class="line"></span><br><span class="line">dad()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		准备一个苹果;</span><br><span class="line">		P(plate);</span><br><span class="line">		P(mutex);</span><br><span class="line">		把苹果放入盘子;</span><br><span class="line">		V(mutex);</span><br><span class="line">		V(apple);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">mom()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">	准备一个橘子;</span><br><span class="line">	P(plate);</span><br><span class="line">	P(mutex);</span><br><span class="line">	把橘子放入盘子;</span><br><span class="line">	V(mutex);</span><br><span class="line">	V(orange);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">daughter()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		P(apple);		</span><br><span class="line">		P(mutex);</span><br><span class="line">		从盘子中取出苹果;</span><br><span class="line">		V(mutex);</span><br><span class="line">		V(plate);</span><br><span class="line">		吃掉苹果;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">son()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		P(orange);		</span><br><span class="line">		P(metux);</span><br><span class="line">		从盘子中取出橘子;</span><br><span class="line">		V(mutex);</span><br><span class="line">		V(plate);</span><br><span class="line">		吃掉橘子;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/21/consumption-problem/plate.png" class title="This is an example image"></div>
 
 <h2 id="如果不设置互斥信号量"><a href="#如果不设置互斥信号量" class="headerlink" title="如果不设置互斥信号量"></a>如果不设置互斥信号量</h2><p><strong><em>分析</em></strong> :刚开始，儿子、女儿进程即使上处理机运行也会被阻塞。如果刚开始是父亲进程先上处理机运行，则:父亲P(plate)，可以访问盘子 –&gt; 母亲P(plate)，阻塞等待盘子 –&gt; 父亲放入苹果V(apple)，女儿进程被唤醒，其他进程即使运行也都会阻塞，暂时不可能访问临界资源（盘子) –&gt; 女儿P(apple)，访问盘子，V(plate)，等待盘子的母亲进程被唤醒 –&gt; 母亲进程访问盘子（其他进程暂时都无法进入临界区）之……</p>
 <h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>本题中的缓冲区大小为1，在任何时刻,apple、 orange、 plate三个同步信号量中最多只有一个是1。因此在任何时刻,最多只有一个进程的P操作不会被阻塞，并<br>顺利地进入临界区…</p>
@@ -190,12 +194,12 @@
 <li><p>盘子变空事件 —&gt; 放入水果事件。“盘子变空事件”既可由儿子引发，也可由女儿引发:“放水果事件”既可能是父亲执行，也可能是母亲执行。这样的话，就可以用一个同步信号量解决问题了</p>
 </li>
 </ul>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/21/consumption-problem/event.png" class title="This is an example image"></div>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/21/consumption-problem/" data-id="ckkiaphj10019o0wzfufi7ext" data-title="consumption problem" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/21/consumption-problem/" data-id="ckkiauwfw0018okwz2gzc8j83" data-title="consumption problem" class="article-share-link">Share</a>
       
       
       

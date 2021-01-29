@@ -106,17 +106,17 @@
 </ul>
 <p>中级调度，就是要决定将哪个处于挂起状态的进程重新调入内存。<br>一个进程可能会被多次调出、调入内存，因此中级调度发送的频率要比高级调度更高。</p>
 <h2 id="低级调度-进程调度"><a href="#低级调度-进程调度" class="headerlink" title="低级调度(进程调度)"></a>低级调度(进程调度)</h2><p>其主要任务是按照某种方法和策略从就绪队列中选取一个进程，将处理机分配给它。<br>进程调度是操作系统中最基本的一种调度，在一般的操作系统中都必须配置进程调度。<br>进程调度的频率很高，一般几十毫秒一次。</p>
-<h1 id="三层调度的联系、对比"><a href="#三层调度的联系、对比" class="headerlink" title="三层调度的联系、对比"></a>三层调度的联系、对比</h1><div style="width:70%;margin:auto"></div>
+<h1 id="三层调度的联系、对比"><a href="#三层调度的联系、对比" class="headerlink" title="三层调度的联系、对比"></a>三层调度的联系、对比</h1><div style="width:70%;margin:auto"><img src="/2021/01/14/processor-dispatching/comparison.png" class title="This is an example image"></div>
 
 <h1 id="补充知识"><a href="#补充知识" class="headerlink" title="补充知识"></a>补充知识</h1><h2 id="进程的”挂起态”"><a href="#进程的”挂起态”" class="headerlink" title="进程的”挂起态”"></a>进程的”挂起态”</h2><p>暂时调到外存等待的进程状态称为 <strong><em>挂起状态</em></strong> (挂起态，suspend)<br>挂起态又可以进一步细分为就绪挂起、阻塞挂起两种状态<br>所以 五状态模型 -&gt; 七状态模型</p>
-<h2 id="七状态模型"><a href="#七状态模型" class="headerlink" title="七状态模型"></a>七状态模型</h2><div style="width:70%;margin:auto"></div>
+<h2 id="七状态模型"><a href="#七状态模型" class="headerlink" title="七状态模型"></a>七状态模型</h2><div style="width:70%;margin:auto"><img src="/2021/01/14/processor-dispatching/model.png" class title="This is an example image"></div>
 
 <p>注意，”挂起” 与 “阻塞” 的区别，；两种状态都是暂时不能获得CPU服务的，但是挂起态是将进程映像调到外存去了，而阻塞态下进程映像还在内存中。<br>有的操作系统会把就绪挂起、阻塞挂起分为两个挂起队列，甚至会更具阻塞原因，再把阻塞挂起进程进一步分为多个队列。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/14/processor-dispatching/" data-id="ckkiaphjk0025o0wz1zjybm8f" data-title="processor-dispatching" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/14/processor-dispatching/" data-id="ckkiauwgc0026okwzgrwyaer4" data-title="processor-dispatching" class="article-share-link">Share</a>
       
       
       
@@ -210,7 +210,7 @@
 <li>可以这样理解，”内核级线程”就是”从操作系统内核视角看能看到的线程”</li>
 </ul>
 <p><strong><em>总结</em></strong><br>在同时支持用户级线程和内核级线程的系统中，可采用二者组合的方式:将n个用户级线程映射到m个内核级线程上 (n&gt;=m)</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/14/thread/combination.png" class title="This is an example image"></div>
 
 <p><strong><em>重点</em></strong><br>操作系统只看得见内核级线程，因此只有内核级线程才是处理机分配的单位。<br>所以该进程即使在一个四核处理机的计算机上运行，也最多只能被分配到两个核，最多只能有两个用户线程并行执行。</p>
 <h1 id="多线程模型"><a href="#多线程模型" class="headerlink" title="多线程模型"></a>多线程模型</h1><p>在同时支持用户级线程和内核级线程的操作系统中，由几个用户级线程映射到几个内核级线程的问题引发出了”多线程模型”问题。</p>
@@ -226,7 +226,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/14/thread/" data-id="ckkiaphjq002fo0wzhm2h8v1f" data-title="thread" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/14/thread/" data-id="ckkiauwge002eokwz28kf38q2" data-title="thread" class="article-share-link">Share</a>
       
       
       
@@ -297,7 +297,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/13/Java-day5/" data-id="ckkiaphin000eo0wz85tbf49m" data-title="Java-day5" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/13/Java-day5/" data-id="ckkiauwfh000fokwz8nvrdfgm" data-title="Java-day5" class="article-share-link">Share</a>
       
       
       
@@ -338,7 +338,7 @@
 <li>广播信道 –&gt; 一对多 ，必须使用专用的共享信道协议来协调这些主机</li>
 </ul>
 <h1 id="简单模型"><a href="#简单模型" class="headerlink" title="简单模型"></a>简单模型</h1><p><strong><em>主机H1向H2发送数据</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/13/DLL/model.png" class title="This is an example image"></div>
 ·
 ps:逐层向下封装，转换可以传输的信号
 
@@ -436,7 +436,7 @@ ps:逐层向下封装，转换可以传输的信号
 <li>链路控制协议LCP(Link Control Protocol)</li>
 <li>网络控制协议NCP(Network Control Protocol)</li>
 </ol>
-<h2 id="PPP协议的帧格式"><a href="#PPP协议的帧格式" class="headerlink" title="PPP协议的帧格式"></a>PPP协议的帧格式</h2><div style="width:70%;margin:auto"></div>
+<h2 id="PPP协议的帧格式"><a href="#PPP协议的帧格式" class="headerlink" title="PPP协议的帧格式"></a>PPP协议的帧格式</h2><div style="width:70%;margin:auto"><img src="/2021/01/13/DLL/PPP.png" class title="This is an example image"></div>
 
 <h2 id="透明传输问题"><a href="#透明传输问题" class="headerlink" title="透明传输问题"></a>透明传输问题</h2><ul>
 <li>当PPP用在同步传输链路时，协议规定采用硬件来完成 <strong><em>比特填充</em></strong> 与HDLC的做法一样</li>
@@ -446,7 +446,7 @@ ps:逐层向下封装，转换可以传输的信号
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/13/DLL/" data-id="ckkiaphi80000o0wz242x9huq" data-title="DLL" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/13/DLL/" data-id="ckkiauwf50001okwzcx3k0i4f" data-title="DLL" class="article-share-link">Share</a>
       
       
       
@@ -485,7 +485,7 @@ ps:逐层向下封装，转换可以传输的信号
         <h1 id="进程通信"><a href="#进程通信" class="headerlink" title="进程通信"></a>进程通信</h1><p><strong><em>进程通信</em></strong> 就是进程之间的信息交换<br>进程是分配系统资源的单位(包括内存地址空间)，因此各进程拥有的内存地址空间相互独立</p>
 <p>比如说：进程1可以访问进程1的地址空间，进程2可以访问进程2的地址空间。但是进程1不能访问进程2的地址空间</p>
 <p>为了保证安全，一个进程不能直接访问另一个进程的地址空间。<br>但是进程之间的信息交换又是必须实现的、为了保证进程间的安全通信，操作系统提供了一些方法。</p>
-<h2 id="共享存储"><a href="#共享存储" class="headerlink" title="共享存储"></a>共享存储</h2><div style="width:70%;margin:auto"></div>
+<h2 id="共享存储"><a href="#共享存储" class="headerlink" title="共享存储"></a>共享存储</h2><div style="width:70%;margin:auto"><img src="/2021/01/13/communication-of-processing/shared-space.png" class title="This is an example image"></div>
 
 <p>两个进程对共享空间的访问必须是互斥的,(互斥访问通过操作系统的工具实现)。</p>
 <p>操作系统只负责提供共享空间和同步互斥工具(如P、V操作)</p>
@@ -507,7 +507,7 @@ ps:逐层向下封装，转换可以传输的信号
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/13/communication-of-processing/" data-id="ckkiaphj00017o0wz2lf47yxw" data-title="communication of processing" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/13/communication-of-processing/" data-id="ckkiauwfv0016okwzauxfanxv" data-title="communication of processing" class="article-share-link">Share</a>
       
       
       
@@ -545,7 +545,7 @@ ps:逐层向下封装，转换可以传输的信号
       
         <h1 id="进程控制"><a href="#进程控制" class="headerlink" title="进程控制"></a>进程控制</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="什么是进程控制"><a href="#什么是进程控制" class="headerlink" title="什么是进程控制"></a>什么是进程控制</h3><p><strong><em>定义 ：</em></strong> 进程控制的主要功能是对系统中所有进程实施有限的管理，它具有创建进程、撤销已有进程。实现进程状态转换等功能。 </p>
 <p>ps: 可以简单理解为进程控制就是要实现进程状态转换</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/13/control-the-processing/change.png" class title="This is an example image"></div>
 
 <h3 id="如何实现进程控制"><a href="#如何实现进程控制" class="headerlink" title="如何实现进程控制"></a>如何实现进程控制</h3><ul>
 <li>进程组织<ul>
@@ -565,7 +565,7 @@ ps:逐层向下封装，转换可以传输的信号
 <li>运行态 –&gt; 终止态 需回收进程拥有的资源，撤销PCB</li>
 </ol>
 <p><strong><em>实现进程控制</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/13/control-the-processing/progress.png" class title="This is an example image"></div>
 
 <p><strong><em>如果某一个进程把其PCB从一个队列放到另一个队列，但是并没有把 PCB 中的状态标志改为新的状态</em></strong></p>
 <p>这种状态十分危险，极有可能导致系统错误，因为 PCB 所处队列与状态标志位就变得不一致了。</p>
@@ -676,7 +676,7 @@ ps:逐层向下封装，转换可以传输的信号
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/13/control-the-processing/" data-id="ckkiaphj3001co0wz8oqog3az" data-title="control thw processing" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/13/control-the-processing/" data-id="ckkiauwfx001bokwzc64q67ua" data-title="control thw processing" class="article-share-link">Share</a>
       
       
       
@@ -772,7 +772,7 @@ ps:逐层向下封装，转换可以传输的信号
 <li>非导引型传输媒体</li>
 </ul>
 <h2 id="电信领域使用的电磁波的频谱"><a href="#电信领域使用的电磁波的频谱" class="headerlink" title="电信领域使用的电磁波的频谱"></a>电信领域使用的电磁波的频谱</h2><p><strong><em>如图所示</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/12/%E2%80%9Cphysical-layer%E2%80%9D/frequence.png" class title="This is an example image"></div>
 
 <p>可见，光纤带宽最宽，传输最快</p>
 <h2 id="常用双绞线"><a href="#常用双绞线" class="headerlink" title="常用双绞线"></a>常用双绞线</h2><ul>
@@ -863,7 +863,7 @@ ps:逐层向下封装，转换可以传输的信号
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/12/%E2%80%9Cphysical-layer%E2%80%9D/" data-id="ckkiaphk1002jo0wz33j73gzz" data-title="physical-layer" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/12/%E2%80%9Cphysical-layer%E2%80%9D/" data-id="ckkiauwgk002kokwz3tzxeazo" data-title="physical-layer" class="article-share-link">Share</a>
       
       
       
@@ -944,7 +944,7 @@ ps:逐层向下封装，转换可以传输的信号
 </ol>
 </li>
 </ul>
-<h1 id="状态资源转换"><a href="#状态资源转换" class="headerlink" title="状态资源转换"></a>状态资源转换</h1><div style="width:70%;margin:auto"></div>
+<h1 id="状态资源转换"><a href="#状态资源转换" class="headerlink" title="状态资源转换"></a>状态资源转换</h1><div style="width:70%;margin:auto"><img src="/2021/01/12/state-of-processing/change.png" class title="This is changeing in the processing"></div>
 
 <ul>
 <li>阻塞态 -&gt; 就绪态：不是进程自身能控制的，是一种被动的行为</li>
@@ -955,7 +955,7 @@ ps:逐层向下封装，转换可以传输的信号
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/12/state-of-processing/" data-id="ckkiaphjl0027o0wz1heo2o6l" data-title="state of processing" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/12/state-of-processing/" data-id="ckkiauwgb0024okwz8gbc77qe" data-title="state of processing" class="article-share-link">Share</a>
       
       
       
@@ -1100,7 +1100,7 @@ ps:逐层向下封装，转换可以传输的信号
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/12/processing/" data-id="ckkiaphjj0023o0wz33q38n77" data-title="processing" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/12/processing/" data-id="ckkiauwga0022okwz079u2yab" data-title="processing" class="article-share-link">Share</a>
       
       
       
@@ -1143,17 +1143,17 @@ ps:逐层向下封装，转换可以传输的信号
 <p>对于html没有特殊含义，但是不好打出来</p>
 <p>&emsp;&emsp;对于html有特殊含义的字符符号，想以普通文本的形式展示出来，那么就需要使用字符实体进行转义处理。</p>
 <p><strong><em>字符实体列表</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/11/Java-day4/character-list.png" class title="This is a list"></div>
 
 <p>&emsp;&emsp;其他的一些特殊符号，与html没有特殊含义，但是有不好打出来的符号</p>
 <p><strong><em>关于URL特殊符号</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/11/Java-day4/URL.png" class title="This is a list"></div>
 
 <p><strong><em>关于 html 的一些特殊符号</em></strong><br><code>https://www.w3school.com.cn/tags/html_ref_symbols.html</code></p>
 <p>ps:字符实体 – 有特殊含义  特殊符号 – 没有特殊含义</p>
 <h1 id="超链接"><a href="#超链接" class="headerlink" title="超链接"></a>超链接</h1><p>超链接标签也叫作 <strong><em>a标签</em></strong> ，可以给文字、图片、音乐、甚至其他的一些标签添加超链接功能</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href&#x3D;&quot;https:&#x2F;&#x2F;www.baidu.com&quot;&gt;百度&lt;&#x2F;a&gt;  &#x2F;&#x2F;外部地址</span><br><span class="line">&lt;a href&#x3D;&quot;01titletag.html&quot;&gt;我自己的网页&lt;&#x2F;a&gt; &#x2F;&#x2F;内部地址，都在day2目录下</span><br></pre></td></tr></table></figure>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/11/Java-day4/catalog.png" class title="This is an example image"></div>
 
 
 <p>ps:a标签默认效果，改变字体颜色，加上下划线<br><strong><em>href</em></strong> 属性设置超链接地址 – 可以是本地资源，也可以是网络资源</p>
@@ -1172,7 +1172,7 @@ ps:逐层向下封装，转换可以传输的信号
 <p>ps: <strong><em>.html</em></strong> 与 <strong><em>img文件夹</em></strong> 是在同一个根目录下</p>
 <p><strong><em>也可以是网络资源</em></strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src&#x3D;&quot;网络中的地址&quot; &#x2F;&gt; &#x2F;&#x2F;复制图片地址</span><br></pre></td></tr></table></figure>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/11/Java-day4/address.png" class title="This is an example image"></div>
 
 <p><strong><em>title属性</em></strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src&#x3D;&quot;img&#x2F;1023.jpg&quot; width&#x3D;&quot;400px&quot; height&#x3D;&quot;200px&quot; title&#x3D;&quot;我是白色的&quot;&#x2F;&gt;  &#x2F;&#x2F;鼠标悬停图片上的文字</span><br></pre></td></tr></table></figure>
@@ -1192,7 +1192,7 @@ ps:逐层向下封装，转换可以传输的信号
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/11/Java-day4/" data-id="ckkiaphil000co0wzdlia1yzl" data-title="Java day4" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/11/Java-day4/" data-id="ckkiauwfg000dokwz68jl9h8g" data-title="Java day4" class="article-share-link">Share</a>
       
       
       

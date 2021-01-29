@@ -13,11 +13,14 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="透明传输问题 当PPP用在同步传输链路时，协议规定采用硬件来完成 比特填充 （和HDLC的做法一样)。 当PPP用在异步传输时，就使用一种特殊的 字符填充法 。  字符填充 将信息字段中出现的每一个Ox7E字节转变成为2字节序列(0x7D,0x5E)。 若信息字段中出现一个0x7D的字节,则将其转变成为⒉字节序列(Ox7D,0x5D)。 若信息字段中出现ASCII码的控制字符（即数值小于0x20的">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/01/19/transparent-transmission/status.png">
+<meta property="og:image" content="http://example.com/2021/01/19/transparent-transmission/adapter.png">
 <meta property="article:published_time" content="2021-01-19T11:55:58.000Z">
 <meta property="article:modified_time" content="2021-01-20T13:02:28.000Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="Internet">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/01/19/transparent-transmission/status.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -132,7 +135,7 @@
 <li>网络控制协议（NCP）：协商该链路上所传输的数据包格式与类型，建立、配置不同的网络层协议；</li>
 </ul>
 <p><strong><em>PPP协议状态图</em></strong> </p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/19/transparent-transmission/status.png" class title="This is an example image"></div>
 
 <p>ps:NCP主要和上层(网络层)协议协商<br>ps:LCP主要和下次进行链路之间的协商<br>ps:鉴别为身份认证</p>
 <h2 id="使用广播信道的数据链路层"><a href="#使用广播信道的数据链路层" class="headerlink" title="使用广播信道的数据链路层"></a>使用广播信道的数据链路层</h2><h3 id="局域网的数据链路层"><a href="#局域网的数据链路层" class="headerlink" title="局域网的数据链路层"></a>局域网的数据链路层</h3><ul>
@@ -193,14 +196,14 @@
 </ul>
 </li>
 </ul>
-<h3 id="计算机通过适配器和局域网进行通信"><a href="#计算机通过适配器和局域网进行通信" class="headerlink" title="计算机通过适配器和局域网进行通信"></a>计算机通过适配器和局域网进行通信</h3><div style="width:70%;margin:auto"></div>
+<h3 id="计算机通过适配器和局域网进行通信"><a href="#计算机通过适配器和局域网进行通信" class="headerlink" title="计算机通过适配器和局域网进行通信"></a>计算机通过适配器和局域网进行通信</h3><div style="width:70%;margin:auto"><img src="/2021/01/19/transparent-transmission/adapter.png" class title="This is an example image"></div>
 
 <p>MAC:指硬件地址</p>
 <h3 id="CSMA-CD协议"><a href="#CSMA-CD协议" class="headerlink" title="CSMA/CD协议"></a>CSMA/CD协议</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/transparent-transmission/" data-id="ckkiaphjr002ho0wz2ul83337" data-title="transparent-transmission" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/transparent-transmission/" data-id="ckkiauwgj002jokwzbm8g3xsn" data-title="transparent-transmission" class="article-share-link">Share</a>
       
       
       

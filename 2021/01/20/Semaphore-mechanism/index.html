@@ -13,11 +13,16 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="信号量机制 进程互斥的四种软件实现方式（单标志法、双标志先检查、双标志后检查、Peterson算法) 进程互斥的三种硬件实现方式（中断屏蔽方法、TS&#x2F;TSL指令、Swap&#x2F;XCHG指令)   在双标志先检查法中，进入区的“检查”、“上锁”操作无法一气呵成，从而导致了两个进程有可能同时进入临界区的问题; 所有的解决方案都无法实现“让权等待”  1965年，荷兰学者Dijkstra提出了一种卓有成效的">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/01/20/Semaphore-mechanism/conclusion.png">
+<meta property="og:image" content="http://example.com/2021/01/20/Semaphore-mechanism/precursor.png">
+<meta property="og:image" content="http://example.com/2021/01/20/Semaphore-mechanism/action.png">
+<meta property="og:image" content="http://example.com/2021/01/20/Semaphore-mechanism/conclusion2.png">
 <meta property="article:published_time" content="2021-01-20T06:04:27.000Z">
 <meta property="article:modified_time" content="2021-01-21T06:45:38.000Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="system">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/01/20/Semaphore-mechanism/conclusion.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -132,7 +137,7 @@
 <li>对信号量s的 <strong><em>一次v操作</em></strong> 意味着进程 <strong><em>释放一个单位的该类资源</em></strong> ，因此需要执行S.value+s，表示资源数加1，若加1后仍是S.value &lt;=0，表示依然有进程在等待该类资源，因此应调用wakeup原语唤醒等待队列中的第一个进程（被唤醒进程从阻塞态 –&gt; 就绪态)。</li>
 </ul>
 <p>ps:记录型信号量在考研中是重要考点</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Semaphore-mechanism/conclusion.png" class title="This is an example image"></div>
 
 <p>注:若考试中出现P(S)、V(S)的操作，除非特别说明，否则默认S为记录型信号量。</p>
 <h2 id="实现进程互斥"><a href="#实现进程互斥" class="headerlink" title="实现进程互斥"></a>实现进程互斥</h2><ol>
@@ -166,7 +171,7 @@
 <li>若先执行到P(S)操作，由于S=0，S–后S=-1，表示此时没有可用资源，因此P操作中会执行block原语，主动请求阻塞。之后当执行完代码2，继而执行v(S)操作，S++，使s变回0,由于此时有进程在该信号量对应的阻塞队列中，因此会在v操作中执行wakeup原语，唤醒P2进程。这样P2就可以继续执行代码4了</li>
 </ul>
 <h2 id="实现进程的前驱"><a href="#实现进程的前驱" class="headerlink" title="实现进程的前驱"></a>实现进程的前驱</h2><p>进程P1中有句代码S1，P2中有句代码S2 …P3..P6中有句代码s6。这些代码要求按如下前驱图所示的顺序来执行:</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Semaphore-mechanism/precursor.png" class title="This is an example image"></div>
 
 <p>其实每一对前驱关系都是一个进程同步问题（需要保证一前一后的操作)因此，</p>
 <ol>
@@ -174,20 +179,20 @@
 <li>在“前操作”之后对相应的同步变量执行v操作</li>
 <li>在“后操作”之前对相应的同步变量执行Р操作</li>
 </ol>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Semaphore-mechanism/action.png" class title="This is an example image"></div>
 
 
 <h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><ul>
 <li>设置互斥信号量，初值为1</li>
 <li>设置同步信号量，初值为0</li>
 </ul>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Semaphore-mechanism/conclusion2.png" class title="This is an example image"></div>
 
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/20/Semaphore-mechanism/" data-id="ckkiaphiw000vo0wzhgbr35ef" data-title="Semaphore mechanism" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/20/Semaphore-mechanism/" data-id="ckkiauwfq000uokwz3x611zma" data-title="Semaphore mechanism" class="article-share-link">Share</a>
       
       
       

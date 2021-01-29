@@ -13,11 +13,14 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="进程控制基本概念什么是进程控制定义 ： 进程控制的主要功能是对系统中所有进程实施有限的管理，它具有创建进程、撤销已有进程。实现进程状态转换等功能。  ps: 可以简单理解为进程控制就是要实现进程状态转换   如何实现进程控制 进程组织 就绪队列指针 –&gt; 指向当前处于就绪态的进程 阻塞队列     –&gt; 指向当前处于阻塞态的进程，很多操作系统还会根据阻塞原因不同再分为多个阻塞队列">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/01/13/control-the-processing/change.png">
+<meta property="og:image" content="http://example.com/2021/01/13/control-the-processing/progress.png">
 <meta property="article:published_time" content="2021-01-13T01:16:04.000Z">
 <meta property="article:modified_time" content="2021-01-13T02:21:34.000Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="system">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/01/13/control-the-processing/change.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -98,7 +101,7 @@
       
         <h1 id="进程控制"><a href="#进程控制" class="headerlink" title="进程控制"></a>进程控制</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="什么是进程控制"><a href="#什么是进程控制" class="headerlink" title="什么是进程控制"></a>什么是进程控制</h3><p><strong><em>定义 ：</em></strong> 进程控制的主要功能是对系统中所有进程实施有限的管理，它具有创建进程、撤销已有进程。实现进程状态转换等功能。 </p>
 <p>ps: 可以简单理解为进程控制就是要实现进程状态转换</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/13/control-the-processing/change.png" class title="This is an example image"></div>
 
 <h3 id="如何实现进程控制"><a href="#如何实现进程控制" class="headerlink" title="如何实现进程控制"></a>如何实现进程控制</h3><ul>
 <li>进程组织<ul>
@@ -118,7 +121,7 @@
 <li>运行态 –&gt; 终止态 需回收进程拥有的资源，撤销PCB</li>
 </ol>
 <p><strong><em>实现进程控制</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/13/control-the-processing/progress.png" class title="This is an example image"></div>
 
 <p><strong><em>如果某一个进程把其PCB从一个队列放到另一个队列，但是并没有把 PCB 中的状态标志改为新的状态</em></strong></p>
 <p>这种状态十分危险，极有可能导致系统错误，因为 PCB 所处队列与状态标志位就变得不一致了。</p>
@@ -229,7 +232,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/13/control-the-processing/" data-id="ckkiaphj3001co0wz8oqog3az" data-title="control thw processing" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/13/control-the-processing/" data-id="ckkiauwfx001bokwzc64q67ua" data-title="control thw processing" class="article-share-link">Share</a>
       
       
       

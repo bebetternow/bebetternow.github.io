@@ -119,7 +119,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/22/Java-day9/" data-id="ckkiaphit000oo0wzcgor2h4g" data-title="Java day9" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/22/Java-day9/" data-id="ckkiauwfn000nokwzcczt348q" data-title="Java day9" class="article-share-link">Share</a>
       
       
       
@@ -198,7 +198,7 @@
 <li>对于初学者来说最难的是发现题目中隐含的两对同步关系。</li>
 <li><strong><em>有时候是消费者需要等待生产者生产，有时候是生产者要等待消费者消费</em></strong> ，这是两个不同的“一前一后问题”，因此也需要设置两个同步信号量。</li>
 </ul>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/21/consumption-problem/relation.png" class title="This is an example image"></div>
 
 
 <h1 id="多生产者-多消费者"><a href="#多生产者-多消费者" class="headerlink" title="多生产者-多消费者"></a>多生产者-多消费者</h1><h2 id="问题描述-2"><a href="#问题描述-2" class="headerlink" title="问题描述"></a>问题描述</h2><p>&emsp;&emsp;桌子上有一只盘子，每次只能向其中放入一个水果。爸爸专向盘子中放苹果，妈妈专向盘子中放橘子，儿子专等着吃盘子中的橘子，女儿专等着吃盘子中的苹果。只有盘子空时，爸爸或妈妈才可向盘子中放一个水果。仅当盘子中有自己需要的水果时，儿子或女儿可以从盘子中取出水果。用PV操作实现上述过程。</p>
@@ -224,7 +224,7 @@
 </ol>
 <p>ps:”盘子为空”这个事件可以由儿子或女儿触发，事件发生后才允许父亲或母亲放水果</p>
 <h2 id="如何实现"><a href="#如何实现" class="headerlink" title="如何实现"></a>如何实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">semaphore mutex &#x3D; 1;		&#x2F;&#x2F;实现互斥访问盘子(缓冲区)</span><br><span class="line">semaphore apple &#x3D; 0;		&#x2F;&#x2F;盘子中有几个苹果</span><br><span class="line">semaphore orange &#x3D; 0;		&#x2F;&#x2F;盘子中有几个橘子</span><br><span class="line">semaphore plate &#x3D; 1;		&#x2F;&#x2F;盘子中还可以放多少个水果</span><br><span class="line"></span><br><span class="line">dad()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		准备一个苹果;</span><br><span class="line">		P(plate);</span><br><span class="line">		P(mutex);</span><br><span class="line">		把苹果放入盘子;</span><br><span class="line">		V(mutex);</span><br><span class="line">		V(apple);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">mom()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">	准备一个橘子;</span><br><span class="line">	P(plate);</span><br><span class="line">	P(mutex);</span><br><span class="line">	把橘子放入盘子;</span><br><span class="line">	V(mutex);</span><br><span class="line">	V(orange);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">daughter()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		P(apple);		</span><br><span class="line">		P(mutex);</span><br><span class="line">		从盘子中取出苹果;</span><br><span class="line">		V(mutex);</span><br><span class="line">		V(plate);</span><br><span class="line">		吃掉苹果;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">son()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		P(orange);		</span><br><span class="line">		P(metux);</span><br><span class="line">		从盘子中取出橘子;</span><br><span class="line">		V(mutex);</span><br><span class="line">		V(plate);</span><br><span class="line">		吃掉橘子;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/21/consumption-problem/plate.png" class title="This is an example image"></div>
 
 <h2 id="如果不设置互斥信号量"><a href="#如果不设置互斥信号量" class="headerlink" title="如果不设置互斥信号量"></a>如果不设置互斥信号量</h2><p><strong><em>分析</em></strong> :刚开始，儿子、女儿进程即使上处理机运行也会被阻塞。如果刚开始是父亲进程先上处理机运行，则:父亲P(plate)，可以访问盘子 –&gt; 母亲P(plate)，阻塞等待盘子 –&gt; 父亲放入苹果V(apple)，女儿进程被唤醒，其他进程即使运行也都会阻塞，暂时不可能访问临界资源（盘子) –&gt; 女儿P(apple)，访问盘子，V(plate)，等待盘子的母亲进程被唤醒 –&gt; 母亲进程访问盘子（其他进程暂时都无法进入临界区）之……</p>
 <h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>本题中的缓冲区大小为1，在任何时刻,apple、 orange、 plate三个同步信号量中最多只有一个是1。因此在任何时刻,最多只有一个进程的P操作不会被阻塞，并<br>顺利地进入临界区…</p>
@@ -249,12 +249,12 @@
 <li><p>盘子变空事件 —&gt; 放入水果事件。“盘子变空事件”既可由儿子引发，也可由女儿引发:“放水果事件”既可能是父亲执行，也可能是母亲执行。这样的话，就可以用一个同步信号量解决问题了</p>
 </li>
 </ul>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/21/consumption-problem/event.png" class title="This is an example image"></div>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/21/consumption-problem/" data-id="ckkiaphj10019o0wzfufi7ext" data-title="consumption problem" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/21/consumption-problem/" data-id="ckkiauwfw0018okwz2gzc8j83" data-title="consumption problem" class="article-share-link">Share</a>
       
       
       
@@ -296,7 +296,7 @@
 <h4 id="锚伪类"><a href="#锚伪类" class="headerlink" title="锚伪类"></a>锚伪类</h4><p>链接的不同状态都可以用不同的方式显示，这些状态包括:活动状态、已被访问状态、未被访问状态、和鼠标悬停状态</p>
 <p>ctrl + shift + delete —&gt; 清楚浏览器打开后的信息<br>重新刷新网页，链接恢复未被访问状态</p>
 <p><strong><em>未被访问过的连接 a标签 默认是蓝色</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Java-day8/baidu.png" class title="This is an example image"></div>
 
 <p>访问过后是紫色，按住不放是红色</p>
 <p>伪类选择器可以同时使用也可以单个使用<br>但是四个一起使用要注意顺序</p>
@@ -453,7 +453,7 @@
 <li>找到div</li>
 <li>找到盒子模型布局</li>
 </ol>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Java-day8/computed.png" class title="This is an example image"></div>
 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">&lt;style&gt;</span><br><span class="line">   #div1&#123;</span><br><span class="line">      border:1px groove blue;</span><br><span class="line">      width: 400px;</span><br><span class="line">      height: 400px;</span><br><span class="line">      &#x2F;* 内部元素距离当前块元素边界的距离 *&#x2F;</span><br><span class="line">      &#x2F;* </span><br><span class="line">      padding:100px; </span><br><span class="line">      同时设置上下左右四个内边距都是100px</span><br><span class="line">      </span><br><span class="line">      padding:50px 100px; </span><br><span class="line">      设置上下内边距50px 左右内边距100px</span><br><span class="line">      </span><br><span class="line">      padding:10px 20px 30px 40px;</span><br><span class="line">      顺时针方向 上10px 右20px 下30px 左40px</span><br><span class="line">      </span><br><span class="line">      padding-top: 10px;</span><br><span class="line">      padding-right: 20px;</span><br><span class="line">      padding-bottom: 30px;</span><br><span class="line">      padding-left: 40px;</span><br><span class="line">      分别设置内边距</span><br><span class="line">      </span><br><span class="line">      内边不会占用空间 而是将块标签放大</span><br><span class="line"></span><br><span class="line">      *&#x2F;</span><br><span class="line">      padding-top: 10px;</span><br><span class="line">      padding-right: 20px;</span><br><span class="line">      padding-bottom: 30px;</span><br><span class="line">      padding-left: 40px;</span><br><span class="line">   &#125;</span><br><span class="line">&lt;&#x2F;style&gt;</span><br><span class="line"></span><br><span class="line">&lt;div id&#x3D;&quot;div1&quot;&gt;</span><br><span class="line">   hello word</span><br><span class="line">&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
 
@@ -474,7 +474,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/20/Java-day8/" data-id="ckkiaphis000mo0wz76ehfzyl" data-title="Java day8" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/20/Java-day8/" data-id="ckkiauwfl000lokwzgn03b795" data-title="Java day8" class="article-share-link">Share</a>
       
       
       
@@ -546,7 +546,7 @@
 <li>对信号量s的 <strong><em>一次v操作</em></strong> 意味着进程 <strong><em>释放一个单位的该类资源</em></strong> ，因此需要执行S.value+s，表示资源数加1，若加1后仍是S.value &lt;=0，表示依然有进程在等待该类资源，因此应调用wakeup原语唤醒等待队列中的第一个进程（被唤醒进程从阻塞态 –&gt; 就绪态)。</li>
 </ul>
 <p>ps:记录型信号量在考研中是重要考点</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Semaphore-mechanism/conclusion.png" class title="This is an example image"></div>
 
 <p>注:若考试中出现P(S)、V(S)的操作，除非特别说明，否则默认S为记录型信号量。</p>
 <h2 id="实现进程互斥"><a href="#实现进程互斥" class="headerlink" title="实现进程互斥"></a>实现进程互斥</h2><ol>
@@ -580,7 +580,7 @@
 <li>若先执行到P(S)操作，由于S=0，S–后S=-1，表示此时没有可用资源，因此P操作中会执行block原语，主动请求阻塞。之后当执行完代码2，继而执行v(S)操作，S++，使s变回0,由于此时有进程在该信号量对应的阻塞队列中，因此会在v操作中执行wakeup原语，唤醒P2进程。这样P2就可以继续执行代码4了</li>
 </ul>
 <h2 id="实现进程的前驱"><a href="#实现进程的前驱" class="headerlink" title="实现进程的前驱"></a>实现进程的前驱</h2><p>进程P1中有句代码S1，P2中有句代码S2 …P3..P6中有句代码s6。这些代码要求按如下前驱图所示的顺序来执行:</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Semaphore-mechanism/precursor.png" class title="This is an example image"></div>
 
 <p>其实每一对前驱关系都是一个进程同步问题（需要保证一前一后的操作)因此，</p>
 <ol>
@@ -588,20 +588,20 @@
 <li>在“前操作”之后对相应的同步变量执行v操作</li>
 <li>在“后操作”之前对相应的同步变量执行Р操作</li>
 </ol>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Semaphore-mechanism/action.png" class title="This is an example image"></div>
 
 
 <h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><ul>
 <li>设置互斥信号量，初值为1</li>
 <li>设置同步信号量，初值为0</li>
 </ul>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/20/Semaphore-mechanism/conclusion2.png" class title="This is an example image"></div>
 
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/20/Semaphore-mechanism/" data-id="ckkiaphiw000vo0wzhgbr35ef" data-title="Semaphore mechanism" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/20/Semaphore-mechanism/" data-id="ckkiauwfq000uokwz3x611zma" data-title="Semaphore mechanism" class="article-share-link">Share</a>
       
       
       
@@ -673,7 +673,7 @@
 <li>网络控制协议（NCP）：协商该链路上所传输的数据包格式与类型，建立、配置不同的网络层协议；</li>
 </ul>
 <p><strong><em>PPP协议状态图</em></strong> </p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/19/transparent-transmission/status.png" class title="This is an example image"></div>
 
 <p>ps:NCP主要和上层(网络层)协议协商<br>ps:LCP主要和下次进行链路之间的协商<br>ps:鉴别为身份认证</p>
 <h2 id="使用广播信道的数据链路层"><a href="#使用广播信道的数据链路层" class="headerlink" title="使用广播信道的数据链路层"></a>使用广播信道的数据链路层</h2><h3 id="局域网的数据链路层"><a href="#局域网的数据链路层" class="headerlink" title="局域网的数据链路层"></a>局域网的数据链路层</h3><ul>
@@ -734,14 +734,14 @@
 </ul>
 </li>
 </ul>
-<h3 id="计算机通过适配器和局域网进行通信"><a href="#计算机通过适配器和局域网进行通信" class="headerlink" title="计算机通过适配器和局域网进行通信"></a>计算机通过适配器和局域网进行通信</h3><div style="width:70%;margin:auto"></div>
+<h3 id="计算机通过适配器和局域网进行通信"><a href="#计算机通过适配器和局域网进行通信" class="headerlink" title="计算机通过适配器和局域网进行通信"></a>计算机通过适配器和局域网进行通信</h3><div style="width:70%;margin:auto"><img src="/2021/01/19/transparent-transmission/adapter.png" class title="This is an example image"></div>
 
 <p>MAC:指硬件地址</p>
 <h3 id="CSMA-CD协议"><a href="#CSMA-CD协议" class="headerlink" title="CSMA/CD协议"></a>CSMA/CD协议</h3>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/transparent-transmission/" data-id="ckkiaphjr002ho0wz2ul83337" data-title="transparent-transmission" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/transparent-transmission/" data-id="ckkiauwgj002jokwzbm8g3xsn" data-title="transparent-transmission" class="article-share-link">Share</a>
       
       
       
@@ -792,12 +792,12 @@
 <p><strong><em>按左中右三部分分</em></strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;frameset cols&#x3D;&quot;200px,200px,*&quot;&gt;</span><br><span class="line">	&lt;frame src&#x3D;&quot;01Enter-label - 副本 - 副本.html&quot; &#x2F;&gt;</span><br><span class="line">	&lt;frame src&#x3D;&quot;03formtag.html&quot; &#x2F;&gt;</span><br><span class="line">	&lt;frame src&#x3D;&quot;http:&#x2F;&#x2F;www.baidu.com&quot; &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;frameset&gt;</span><br></pre></td></tr></table></figure>
 <p><strong><em>效果图</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/18/Java-day7/cols.png" class title="This is an example image"></div>
 
 <p><strong><em>只要两部分</em></strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;frameset cols&#x3D;&quot;200px,*&quot;&gt;</span><br><span class="line">	&lt;frame src&#x3D;&quot;03formtag.html&quot; &#x2F;&gt;</span><br><span class="line">	&lt;frame src&#x3D;&quot;http:&#x2F;&#x2F;www.baidu.com&quot; &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;frameset&gt;</span><br></pre></td></tr></table></figure>
 <p><strong><em>综合要求</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/18/Java-day7/target.png" class title="This is an example image"></div>
 
 <p><strong><em>主页面</em></strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;frameset rows&#x3D;&quot;200px,*,300px&quot;&gt;</span><br><span class="line">	&lt;frame src&#x3D;&quot;top.html&quot; &#x2F;&gt;</span><br><span class="line">	&lt;frameset cols&#x3D;&quot;200px,*&quot;&gt;</span><br><span class="line">		&lt;frame src&#x3D;&quot;left.html&quot; &#x2F;&gt;</span><br><span class="line">		&lt;frame src&#x3D;&quot;http:&#x2F;&#x2F;www.baidu.com&quot; name&#x3D;&quot;right&quot; &#x2F;&gt;</span><br><span class="line">	&lt;&#x2F;frameset&gt;</span><br><span class="line">	&lt;frame src&#x3D;&quot;botton.html&quot; &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;frameset&gt;</span><br></pre></td></tr></table></figure>
@@ -824,7 +824,7 @@
 <li><p>内嵌式</p>
 <ul>
 <li>将CSS样式的代表抽取出来，通过选择器确定样式作用范围</li>
-<li>在<head>标签中 使用一堆style标签 定义CSS样式     </li>
+<li>在<head>标签中 使用一堆style标签 定义CSS样式     </head></li>
 <li>减少相同代码的编写量 减少代码的维护工作量</li>
 </ul>
 </li>
@@ -881,7 +881,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/18/Java-day7/" data-id="ckkiaphir000jo0wzg6xh4gdm" data-title="Java day7" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/18/Java-day7/" data-id="ckkiauwfk000jokwzbs8vb5ek" data-title="Java day7" class="article-share-link">Share</a>
       
       
       
@@ -1004,7 +1004,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/18/Synchronization-and-mutex/" data-id="ckkiaphiy0012o0wzhlwxavos" data-title="Synchronization and mutex" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/18/Synchronization-and-mutex/" data-id="ckkiauwft0011okwzayvuffc8" data-title="Synchronization and mutex" class="article-share-link">Share</a>
       
       
       
@@ -1049,10 +1049,10 @@
 <p><strong><em>用表格进行修饰</em></strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">&lt;table width&#x3D;&quot;30%&quot; align&#x3D;&quot;center&quot; border&#x3D;&quot;1px&quot; cellspacing&#x3D;&quot;0px&quot;&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			&lt;!-- 文本框 --&gt;</span><br><span class="line">			账号: </span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			&lt;input type&#x3D;&quot;text&quot; &#x2F;&gt;</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">	&lt;&#x2F;tr&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			密码:</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			&lt;input type&#x3D;&quot;password&quot; &#x2F;&gt;</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">	&lt;&#x2F;tr&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			性别:</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			&lt;input type&#x3D;&quot;radio&quot; name&#x3D;&quot;gender&quot; checked &#x2F;&gt;男</span><br><span class="line">			&lt;input type&#x3D;&quot;radio&quot; name&#x3D;&quot;gender&quot;  &#x2F;&gt;女</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">	&lt;&#x2F;tr&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			爱好:</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			&lt;input type&#x3D;&quot;checkbox&quot; &#x2F;&gt;篮球</span><br><span class="line">			&lt;input type&#x3D;&quot;checkbox&quot; &#x2F;&gt;足球</span><br><span class="line">			&lt;input type&#x3D;&quot;checkbox&quot; &#x2F;&gt;羽毛球</span><br><span class="line">			&lt;input type&#x3D;&quot;checkbox&quot; &#x2F;&gt;乒乓球</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">	&lt;&#x2F;tr&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			请选择照片:</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			&lt;input type&#x3D;&quot;file&quot; &#x2F;&gt;</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">	&lt;&#x2F;tr&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			个人简介:</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			&lt;textarea style&#x3D;&quot;width: 200px;height: 100px;&quot;&gt;请介绍一下你自己&lt;&#x2F;textarea&gt;</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">	&lt;&#x2F;tr&gt;</span><br><span class="line">	&lt;tr&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			籍贯</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">		&lt;td&gt;</span><br><span class="line">			&lt;select&gt;</span><br><span class="line">				&lt;option selected&gt;-请选择省份-&lt;&#x2F;option&gt;</span><br><span class="line">				&lt;option&gt;江苏&lt;&#x2F;option&gt;</span><br><span class="line">				&lt;option&gt;北京&lt;&#x2F;option&gt;</span><br><span class="line">				&lt;option&gt;上海&lt;&#x2F;option&gt;</span><br><span class="line">			&lt;&#x2F;select&gt;</span><br><span class="line">		&lt;&#x2F;td&gt;</span><br><span class="line">	&lt;&#x2F;tr&gt;</span><br><span class="line">&lt;&#x2F;table&gt;</span><br></pre></td></tr></table></figure>
 <p><strong><em>效果图</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/Java-day6/formtag.png" class title="This is an example image"></div>
 
 <p><strong><em>提交动作</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/Java-day6/handing.png" class title="This is an example image"></div>
 
 <h2 id="表单标签"><a href="#表单标签" class="headerlink" title="表单标签"></a>表单标签</h2><p>form 表单标签在网页上没有任何的显示效果<br>将网页上输入的数据向后台传递数据所使用的标签<br>form 表单标签包裹的范围就是可以向后台传递的范围<br>actiom 属性 数据提交地址<br>method 属性 数据提交方式<br>    get  数据量小    数据显示在地址栏上    不安全<br>    post 数据量大    数据不显示在地址栏上    安全</p>
 <ol>
@@ -1091,7 +1091,7 @@
 </li>
 </ol>
 <p><strong><em>应得效果</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/Java-day6/action.png" class title="This is an example image"></div>
 
 
 <p><strong><em>查看post的效果</em></strong></p>
@@ -1100,7 +1100,7 @@
 <li>点开network 在参数处可以查看</li>
 </ol>
 <p><strong><em>查看表单</em></strong></p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/Java-day6/post.png" class title="This is an example image"></div>
 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">&lt;body&gt;</span><br><span class="line">	&lt;!-- </span><br><span class="line">	1. 使用form标签包裹数据提交范围</span><br><span class="line">	2. 通过antion属性确定数据提交地址</span><br><span class="line">	3. 通过method属性确定数据提交方式		</span><br><span class="line">		get</span><br><span class="line">			数据通过地址栏传递	有长度限制	传输数据量有限</span><br><span class="line">			地址栏只能放文字	只能提交文本类型	不能上传文件</span><br><span class="line">			数据显示地址栏上	数据相对不安全</span><br><span class="line">		post</span><br><span class="line">			数据不通过地址栏	单独打成数据包发送	数据包一般认为没有限制	传输数据量很大</span><br><span class="line">			数据包可以传文字	也可以传输文件</span><br><span class="line">			数据不显示在地址栏上	相对安全</span><br><span class="line">	4.准备一个提交按钮</span><br><span class="line">		不能是button button知识一个简单的按钮 不能提交数据</span><br><span class="line">		应该用submit submit具备提交数据功能</span><br><span class="line">			但是必须在form表单内部 标志提交的是当前所在的表单</span><br><span class="line">	5.给需要提交数据的输入框提交 name 和 value属性  </span><br><span class="line">		有些value就是文本框中提交的值</span><br><span class="line">		name是给数据的名字 让后台区分不同数据的含义</span><br><span class="line">			不添加name不能发送 不能识别数据时干什么的 默认不传</span><br><span class="line">	 --&gt;</span><br><span class="line">	&lt;form action&#x3D;&quot;http:&#x2F;&#x2F;bebetternow.github.io&quot; method&#x3D;&quot;post&quot;&gt;</span><br><span class="line">		账号:&lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;username&quot; &#x2F;&gt; &lt;br &#x2F;&gt;</span><br><span class="line">			&lt;!-- value属性就是输入框上实际的值 --&gt;</span><br><span class="line">		密码:&lt;input type&#x3D;&quot;password&quot; name&#x3D;&quot;pwd&quot;&#x2F;&gt; &lt;br &#x2F;&gt;</span><br><span class="line">		性别:</span><br><span class="line">			&lt;input type&#x3D;&quot;radio&quot; name&#x3D;&quot;gender&quot; &#x2F;&gt;男 </span><br><span class="line">			&lt;input type&#x3D;&quot;radio&quot; name&#x3D;&quot;gender&quot; checked&#x2F;&gt;女</span><br><span class="line">		&lt;br &#x2F;&gt;</span><br><span class="line">		爱好:</span><br><span class="line">			&lt;input type&#x3D;&quot;checkbox&quot; &#x2F;&gt;篮球</span><br><span class="line">			&lt;input type&#x3D;&quot;checkbox&quot; checked&#x2F;&gt;足球</span><br><span class="line">			&lt;input type&#x3D;&quot;checkbox&quot; &#x2F;&gt;羽毛球</span><br><span class="line">			&lt;input type&#x3D;&quot;checkbox&quot; &#x2F;&gt;乒乓球</span><br><span class="line">			&lt;br &#x2F;&gt;</span><br><span class="line">		请选择照片：</span><br><span class="line">			&lt;input type&#x3D;&quot;file&quot; &#x2F;&gt;</span><br><span class="line">			&lt;br &#x2F;&gt;</span><br><span class="line">		个人简介:</span><br><span class="line">			&lt;textarea style&#x3D;&quot;width: 200px;height: 200px;&quot;&gt;请介绍一下你自己&lt;&#x2F;textarea&gt;</span><br><span class="line">			&lt;br &#x2F;&gt;</span><br><span class="line">		籍贯:</span><br><span class="line">		&lt;select multiple&#x3D;&quot;multiple&quot;&gt;			</span><br><span class="line">			&lt;option&gt;吉林&lt;&#x2F;option&gt;</span><br><span class="line">			&lt;option&gt;黑龙江&lt;&#x2F;option&gt;</span><br><span class="line">			&lt;option&gt;辽林&lt;&#x2F;option&gt;</span><br><span class="line">			&lt;option selected&#x3D;&quot;selected&quot;&gt;-请选择省份-&lt;&#x2F;option&gt;</span><br><span class="line">		&lt;&#x2F;select&gt;</span><br><span class="line">		&lt;br &#x2F;&gt;</span><br><span class="line">		&lt;!-- button 是一个按钮 不能提交数据 --&gt;</span><br><span class="line">		&lt;input type&#x3D;&quot;submit&quot; value&#x3D;&quot;提交&quot;&#x2F;&gt;</span><br><span class="line">	&lt;&#x2F;form&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br></pre></td></tr></table></figure>
 <p><strong><em>value属性</em></strong> :用于定义提交的数据<br>不同属性从value不同:</p>
@@ -1114,7 +1114,7 @@
 <li>不是所有属性添加name与value都可以提交，必须是输入属性，如p就不行</li>
 </ol>
 <p><strong><em>？</em></strong>之后是提交的数据，前面是服务器地址<br><strong><em>形式</em></strong> :数据名 + 数据值  一对一对(键值对)</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/Java-day6/value.png" class title="This is an example image"></div>
 
 <h2 id="清空输入"><a href="#清空输入" class="headerlink" title="清空输入"></a>清空输入</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;input type&#x3D;&quot;reset&quot; value&#x3D;&quot;清空&quot;&#x2F;&gt;</span><br></pre></td></tr></table></figure>
 <p><strong><em>最终代码</em></strong></p>
@@ -1126,7 +1126,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/16/Java-day6/" data-id="ckkiaphip000ho0wz7c5tgkp6" data-title="Java-day6" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/16/Java-day6/" data-id="ckkiauwfj000hokwzfhrd2n3d" data-title="Java-day6" class="article-share-link">Share</a>
       
       
       
@@ -1163,11 +1163,11 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <h1 id="调度算法的评价指标"><a href="#调度算法的评价指标" class="headerlink" title="调度算法的评价指标"></a>调度算法的评价指标</h1><h2 id="CPU利用率"><a href="#CPU利用率" class="headerlink" title="CPU利用率"></a>CPU利用率</h2><p>指CPU”忙碌”的时间占总时间的比例</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/dispatc-algorithm/formula.png" class title="This is an example image"></div>
 
 <p>通常会考察多道程序并发执行的情况，可以用”甘特图”来辅助计算</p>
 <h2 id="系统吞吐量"><a href="#系统吞吐量" class="headerlink" title="系统吞吐量"></a>系统吞吐量</h2><p>对于计算机来说，希望用尽可能少的时间处理完尽可能多的作业<br>指单位时间内完成作业的数量</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/dispatc-algorithm/formula2.png" class title="This is an example image"></div>
 
 <h2 id="周转时间"><a href="#周转时间" class="headerlink" title="周转时间"></a>周转时间</h2><p>对于计算机的用户来说，他很关心自己的作业从提交到完成共花了多少时间。<br><strong><em>周转时间</em></strong> ，是指从作业被提交给系统开始，到作业完成为止的这段时间间隔。<br>它包括四个部分:</p>
 <ul>
@@ -1181,7 +1181,7 @@
 <li>周转时间 –&gt; 对于用户来说，更关心自己的单个作业的周转时间</li>
 <li>平均周转时间 –&gt; 对于操作系统来说，更关心系统的整体表现，因此更关心所有作业周转时间的平均值</li>
 </ul>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/dispatc-algorithm/formula3.png" class title="This is an example image"></div>
 
 <ul>
 <li><p>带权周转时间 –&gt; 必然大于等于1，带权周转时间与周转时间都是越小越好</p>
@@ -1193,10 +1193,10 @@
 <li><p>平均带权周转时间</p>
 </li>
 </ul>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/dispatc-algorithm/formula4.png" class title="This is an example image"></div>
 
 <h2 id="等待时间"><a href="#等待时间" class="headerlink" title="等待时间"></a>等待时间</h2><p>对于计算机用户来说，希望自己的作业尽可能少的等待处理机<br>等待时间，指进程/作业 <strong><em>处于等待处理机状态时间之和</em></strong> ，等待时间越长，用户满意度越低。</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/dispatc-algorithm/waiting.png" class title="This is an example image"></div>
 
 <p>对于 <strong><em>进程</em></strong> 来说，等待时间就是指进程建立后 <strong><em>等待别服务的时间之和</em></strong> ，在等待I/O完成的期间其实进程也是在被服务的，所以不计入等待时间<br>对于 <strong><em>作业</em></strong> 来说，不仅要考虑建立进程后的等待时间，还要加上作业在外存后备队列中等待时间。</p>
 <p>一个作业总共需要被CPU服务多久，被I/O设备服务多久一般是确定不变的，因此调度算法其实只会影响作业/进程的等待时间。当然，与前面指标类似，也会有”平均等待时间”来评价整体的性能。</p>
@@ -1292,14 +1292,14 @@
 <li>扩展:可以将因I/O而阻塞的进程重新放回原队列，这样I/O型进程就可以保持较高优先级</li>
 </ul>
 <p>ps:实际可能会有非抢占式版本</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><div style="width:70%;margin:auto"></div>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><div style="width:70%;margin:auto"><img src="/2021/01/16/dispatc-algorithm/back.png" class title="This is an example image"></div>
 
 <p>注:比起早期的批处理操作系统来说，由于计算机造价大幅降低，因此之后出现的交互式操作系统（包括分时操作系统、实时操作系统等）更注重系统的响应时间、公平性平衡性等指标。而这几种算法恰好也能较好地满足交互式系统的需求。因此这三种算法适合用于 <strong><em>交互式系统</em></strong> 。(比如UNIX使用的就是多级反馈队列调度算法)</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/16/dispatc-algorithm/" data-id="ckkiaphj6001ho0wzg7ll5093" data-title="dispatc-algorithm" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/16/dispatc-algorithm/" data-id="ckkiauwfy001gokwz8evdh7zu" data-title="dispatc-algorithm" class="article-share-link">Share</a>
       
       
       
@@ -1362,7 +1362,7 @@
 <p>进程在 <strong><em>操作内核程序临界区</em></strong> 中 <strong><em>不能</em></strong> 进行调度与切换 (对)<br>进程处于 <strong><em>临界区</em></strong> 时 <strong><em>不能</em></strong> 进行处理机调度 (错误)</p>
 <p><strong><em>临界资源 :</em></strong> 一个时间段内，只允许一个进程使用的资源。各进程需要 <strong><em>互斥地</em></strong> 访问临界资源。<br>临界区，访问临界资源的那段代码。</p>
 <p>内核程序临界区一般是用来访问某种内核数据的，比如进程的就绪队列(由各种进程的PCB组成)</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/16/process-scheduling/criticalroom.png" class title="This is an example image"></div>
 
 <ul>
 <li><p>如果还没有退出临界区(还没有解锁)就进行进程调度，但是进程调度相关的程序也需要访问就绪队列，但此时就绪队列被锁住了，因此又无法顺利的进行进程调度。</p>
@@ -1395,7 +1395,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/16/process-scheduling/" data-id="ckkiaphji0020o0wz0hqw73f9" data-title="process scheduling" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/16/process-scheduling/" data-id="ckkiauwg9001zokwz2wcm6ifq" data-title="process scheduling" class="article-share-link">Share</a>
       
       
       

@@ -13,11 +13,13 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="PV操作P操作的主要动作是：    S减1；   若S减1后仍大于或等于0，则进程继续执行；  若S减1后小于0，则该进程被阻塞后放入等待该信号量的等待队列中，然后转进程调度。  V操作的主要动作是：   S加1；  若相加后结果大于0，则进程继续执行； 若相加后结果小于或等于0，则从该信号的等待队列中释放一个等待进程，然后再返回原进程继续执行或转进程调度。  抽烟者问题问题描述&amp;emsp;&amp;em">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/01/23/Smoker-problem/structure.png">
 <meta property="article:published_time" content="2021-01-23T07:27:17.000Z">
 <meta property="article:modified_time" content="2021-01-23T09:55:04.000Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="system">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/01/23/Smoker-problem/structure.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -129,7 +131,7 @@
 </li>
 </ol>
 <p>一开始没有组合一，需要供应者供应，固设置 offer1 = 0;<br>一开始没有任何完成信号，固设置 finish = 0;</p>
-<div style="width:70%;margin:auto"></div>
+<div style="width:70%;margin:auto"><img src="/2021/01/23/Smoker-problem/structure.png" class title="This is an example image"></div>
 
 <h2 id="如何实现"><a href="#如何实现" class="headerlink" title="如何实现"></a>如何实现</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">semaphore offer1 &#x3D; 0;		&#x2F;&#x2F;桌上组合一的数量</span><br><span class="line">semaphore offer2 &#x3D; 0;		&#x2F;&#x2F;桌上组合二的数量</span><br><span class="line">semaphore offer3 &#x3D; 0;		&#x2F;&#x2F;桌上组合三的数量</span><br><span class="line">semaphore finish &#x3D; 0;		&#x2F;&#x2F;抽烟是否完成</span><br><span class="line">int i &#x3D; 0;					&#x2F;&#x2F;用于实现“三个抽烟者轮流抽烟”</span><br><span class="line"></span><br><span class="line">provider()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">		if(i &#x3D;&#x3D; 0)&#123;</span><br><span class="line">			将组合一放在桌上;</span><br><span class="line">			V(offer1)；</span><br><span class="line">		&#125;else if(i &#x3D;&#x3D; 1)&#123;</span><br><span class="line">			将组合二放在桌上;</span><br><span class="line">			V(offer2)；</span><br><span class="line">		&#125;else if(i &#x3D;&#x3D; 2)&#123;</span><br><span class="line">			将组合三放在桌上;</span><br><span class="line">			V(offer3)；</span><br><span class="line">		&#125;</span><br><span class="line">		i &#x3D; (i+1)%3;</span><br><span class="line">		P(finish);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">smoker1()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">	P(offer1);</span><br><span class="line">	从桌上拿走组合一:卷烟；抽掉；</span><br><span class="line">	V(finidh);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">smoker2()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">	P(offer2);</span><br><span class="line">	从桌上拿走组合二:卷烟；抽掉；</span><br><span class="line">	V(finidh);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">smoker3()&#123;</span><br><span class="line">	while(1)&#123;</span><br><span class="line">	P(offer.);</span><br><span class="line">	从桌上拿走组合三:卷烟；抽掉；</span><br><span class="line">	V(finidh);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="问题回顾"><a href="#问题回顾" class="headerlink" title="问题回顾"></a>问题回顾</h2><ul>
@@ -174,7 +176,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/23/Smoker-problem/" data-id="ckkiaphiw000xo0wzf02f3r7r" data-title="Smoker problem" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/23/Smoker-problem/" data-id="ckkiauwfq000wokwz23xp821r" data-title="Smoker problem" class="article-share-link">Share</a>
       
       
       
