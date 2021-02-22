@@ -71,6 +71,156 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-terminals-and-exceptions" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/01/11/terminals-and-exceptions/" class="article-date">
+  <time class="dt-published" datetime="2021-01-11T08:08:40.000Z" itemprop="datePublished">2021-01-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2021/01/11/terminals-and-exceptions/">terminals and exceptions</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h1 id="中断机制的诞生"><a href="#中断机制的诞生" class="headerlink" title="中断机制的诞生"></a>中断机制的诞生</h1><p>&emsp;&emsp;早期计算机只能串行的进行工作，同一时刻最多一道程序。为了解决这个问题，人们发明了操作系统作为计算机的管理者，引入中断机制，实现了多道程序并发执行。</p>
+<p><strong><em>本质，</em></strong> 发生中断意味着需要操作系统介入，并展开管理工作。</p>
+<ol>
+<li>进程1正在进行，CPU收到计时部件发出的 <strong><em>中断信号</em></strong> ，切换为 <strong><em>核心态</em></strong> 对中断进行处理</li>
+<li>操作系统内核负责对中断信号进行处理 -&gt; 进程1时间片已用完，换为进程2运行</li>
+<li>进程2发出系统调用（内中断信号），请求输出。CPU切换为 <strong><em>核心态</em></strong> ，对中断进行处理。</li>
+<li>操作系统内核负责对中断信号进行处理</li>
+<li>进程2要等待I/O设备运行，换进程3运行</li>
+<li>I/O完成，设备向CPU发出 <strong><em>中断信号</em></strong> </li>
+<li>CPU收到I/O设备发来的中断信号，切换为核心态，对中断进行处理</li>
+<li>操作系统内核负责对中断信号进行处理</li>
+<li>进程2的I/O已经完成，让进程2 恢复运行，以完成后续工作</li>
+</ol>
+<h1 id="中断的概念和作用"><a href="#中断的概念和作用" class="headerlink" title="中断的概念和作用"></a>中断的概念和作用</h1><ol>
+<li>当中断发生时，CPU立即进入核心态</li>
+<li>当中断发生以后，当前运行的进程暂停运行，并且由操作系统内核对中断进行处理</li>
+<li>对于不同的中断信号，会进行不同的处理</li>
+</ol>
+<p>&emsp;&emsp;发生了中断，就意味着需要操作系统介入，开展管理工作。由于操作系统的管理工作（比如进程切换、分配I/O设备等）需要使用特权指令，因此CPU要从用户态转为核心态。中断可以是CPU从用户态切换为核心态，是操作系统获得计算机的控制权。有了中断，才能实现多道程序的并发执行。</p>
+<p>ps:用户态、核心态之间的切换是怎么实现的？<br>答：”用户态 -&gt; 核心态” 是通过中断实现的，并且中断是唯一途径。<br>“核心态 -&gt; 用户态” 的切换是通过执行一个特权指令，将程序状态字（PSW）的标志位设置为”用户态”。</p>
+<h1 id="中断（广义）的分类"><a href="#中断（广义）的分类" class="headerlink" title="中断（广义）的分类"></a>中断（广义）的分类</h1><h2 id="内中断-（异常、例外。陷入）-与当前程序有关"><a href="#内中断-（异常、例外。陷入）-与当前程序有关" class="headerlink" title="内中断 - （异常、例外。陷入）- 与当前程序有关"></a>内中断 - （异常、例外。陷入）- 与当前程序有关</h2><p>信号来源：CPU内部   与当前执行的指令有关</p>
+<ul>
+<li>自愿中断 — 指令中断  如：系统调用时使用的访管指令（又叫陷入指令、trap指令）</li>
+<li>强迫中断 <ul>
+<li>硬件故障  如：缺页</li>
+<li>软件中断  如：整数除0</li>
+</ul>
+</li>
+</ul>
+<h2 id="外中断-中断（狭义）-与当前程序无关"><a href="#外中断-中断（狭义）-与当前程序无关" class="headerlink" title="外中断 - 中断（狭义）- 与当前程序无关"></a>外中断 - 中断（狭义）- 与当前程序无关</h2><p>信号来源：CPU外部<br>与当前执行程序无关</p>
+<ul>
+<li>外设请求  如：I/O操作完成发出的中断信号</li>
+<li>人工干预  如：用户强行终止一个进程</li>
+</ul>
+<h1 id="另一种分类方式"><a href="#另一种分类方式" class="headerlink" title="另一种分类方式"></a>另一种分类方式</h1><ul>
+<li><p>内中断</p>
+<ul>
+<li>陷阱、陷入（trap） – 有意而为的异常，如系统调用</li>
+<li>故障 （flaut） – 由错误条件引起的，可能被故障处理程序修复，如缺页</li>
+<li>终止 （abort） – 不可修复的致命错误造成的结果，终止处理程序不再将控制返回给引发终止的应用程序，如整数除0</li>
+</ul>
+</li>
+<li><p>外中断</p>
+<ul>
+<li>I/O中断</li>
+<li>人工干预</li>
+</ul>
+</li>
+</ul>
+<h1 id="外中断的处理过程"><a href="#外中断的处理过程" class="headerlink" title="外中断的处理过程"></a>外中断的处理过程</h1><ol>
+<li>执行完每个指令之后，CPU都要检查当前是否有外部中断信号</li>
+<li>如果检测到外部中断信号，则需要保护中断进程的CPU环境（如程序状态字PSW、程序计数器PC、各种通用寄存器） – 详见 <strong><em>计算机组成原理</em></strong></li>
+<li>根据中断信号类型转入相应的中断处理程序 – 属于核心态</li>
+<li>恢复原进程的CPU环境并退出中断，返回原进程继续往下执行</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/01/11/terminals-and-exceptions/" data-id="cklgkcvvz002mvowzbqzi7k49" data-title="terminals and exceptions" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/system/" rel="tag">system</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-methods-of-show-your-photo" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/01/11/methods-of-show-your-photo/" class="article-date">
+  <time class="dt-published" datetime="2021-01-11T07:30:47.000Z" itemprop="datePublished">2021-01-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2021/01/11/methods-of-show-your-photo/">methods of show your photo</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>&emsp;&emsp;为了解决做笔记时无法插入图片的问题，今天特地花了一点时间。</p>
+<h1 id="插件安装与配置"><a href="#插件安装与配置" class="headerlink" title="插件安装与配置"></a>插件安装与配置</h1><p>首先我们要安装一个图片路径转换的插件，这个插件的名字是 <strong><em>hexo-asset-image</em></strong> </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install https:&#x2F;&#x2F;github.com&#x2F;CodeFalling&#x2F;hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+<p>可以用淘宝源换源使用cnpm来进行安装。<br>但是这个插件有内容需要修改，可能会出bug<br>打开<code>/node_modules/hexo-asset-image/index.js</code>,将其中的内容换为以下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">&#39;use strict&#39;;</span><br><span class="line">var cheerio &#x3D; require(&#39;cheerio&#39;);</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; http:&#x2F;&#x2F;stackoverflow.com&#x2F;questions&#x2F;14480345&#x2F;how-to-get-the-nth-occurrence-in-a-string</span><br><span class="line">function getPosition(str, m, i) &#123;</span><br><span class="line">  return str.split(m, i).join(m).length;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var version &#x3D; String(hexo.version).split(&#39;.&#39;);</span><br><span class="line">hexo.extend.filter.register(&#39;after_post_render&#39;, function(data)&#123;</span><br><span class="line">  var config &#x3D; hexo.config;</span><br><span class="line">  if(config.post_asset_folder)&#123;</span><br><span class="line">    	var link &#x3D; data.permalink;</span><br><span class="line">	if(version.length &gt; 0 &amp;&amp; Number(version[0]) &#x3D;&#x3D; 3)</span><br><span class="line">	   var beginPos &#x3D; getPosition(link, &#39;&#x2F;&#39;, 1) + 1;</span><br><span class="line">	else</span><br><span class="line">	   var beginPos &#x3D; getPosition(link, &#39;&#x2F;&#39;, 3) + 1;</span><br><span class="line">	&#x2F;&#x2F; In hexo 3.1.1, the permalink of &quot;about&quot; page is like &quot;...&#x2F;about&#x2F;index.html&quot;.</span><br><span class="line">	var endPos &#x3D; link.lastIndexOf(&#39;&#x2F;&#39;) + 1;</span><br><span class="line">    link &#x3D; link.substring(beginPos, endPos);</span><br><span class="line"></span><br><span class="line">    var toprocess &#x3D; [&#39;excerpt&#39;, &#39;more&#39;, &#39;content&#39;];</span><br><span class="line">    for(var i &#x3D; 0; i &lt; toprocess.length; i++)&#123;</span><br><span class="line">      var key &#x3D; toprocess[i];</span><br><span class="line"> </span><br><span class="line">      var $ &#x3D; cheerio.load(data[key], &#123;</span><br><span class="line">        ignoreWhitespace: false,</span><br><span class="line">        xmlMode: false,</span><br><span class="line">        lowerCaseTags: false,</span><br><span class="line">        decodeEntities: false</span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      $(&#39;img&#39;).each(function()&#123;</span><br><span class="line">		if ($(this).attr(&#39;src&#39;))&#123;</span><br><span class="line">			&#x2F;&#x2F; For windows style path, we replace &#39;\&#39; to &#39;&#x2F;&#39;.</span><br><span class="line">			var src &#x3D; $(this).attr(&#39;src&#39;).replace(&#39;\\&#39;, &#39;&#x2F;&#39;);</span><br><span class="line">			if(!&#x2F;http[s]*.*|\&#x2F;\&#x2F;.*&#x2F;.test(src) &amp;&amp;</span><br><span class="line">			   !&#x2F;^\s*\&#x2F;&#x2F;.test(src)) &#123;</span><br><span class="line">			  &#x2F;&#x2F; For &quot;about&quot; page, the first part of &quot;src&quot; can&#39;t be removed.</span><br><span class="line">			  &#x2F;&#x2F; In addition, to support multi-level local directory.</span><br><span class="line">			  var linkArray &#x3D; link.split(&#39;&#x2F;&#39;).filter(function(elem)&#123;</span><br><span class="line">				return elem !&#x3D; &#39;&#39;;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  var srcArray &#x3D; src.split(&#39;&#x2F;&#39;).filter(function(elem)&#123;</span><br><span class="line">				return elem !&#x3D; &#39;&#39; &amp;&amp; elem !&#x3D; &#39;.&#39;;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  if(srcArray.length &gt; 1)</span><br><span class="line">				srcArray.shift();</span><br><span class="line">			  src &#x3D; srcArray.join(&#39;&#x2F;&#39;);</span><br><span class="line">			  $(this).attr(&#39;src&#39;, config.root + link + src);</span><br><span class="line">			  console.info&amp;&amp;console.info(&quot;update link as:--&gt;&quot;+config.root + link + src);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;else&#123;</span><br><span class="line">			console.info&amp;&amp;console.info(&quot;no src attr, skipped...&quot;);</span><br><span class="line">			console.info&amp;&amp;console.info($(this));</span><br><span class="line">		&#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      data[key] &#x3D; $.html();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>打开<code>_config.yum</code>文件，修改下述内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">post_asset_folder: true</span><br></pre></td></tr></table></figure>
+<p>建议 ctrl + f 快速查找</p>
+<h1 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo n &quot;photo&quot;</span><br></pre></td></tr></table></figure>
+<p>可以发现，在<code>source/_posts</code>中不仅生成了.md文件，也生成了同名的文件夹</p>
+<div style="width:70%;margin:auto"><img src="/2021/01/11/methods-of-show-your-photo/picture1.png" class title="This is an example image"></div>
+
+<p>将用到的图片放入文件夹，正确的引用图片方式是使用下列的标签，而不是markdown：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% asset_img your-picture-name.jpg This is an example image %&#125;</span><br></pre></td></tr></table></figure>
+<p>然后就成功了，可以添加格式，如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;div style&#x3D;&quot;width:70%;margin:auto&quot;&gt;&#123;% asset_img picture1.jpg This is an example image %&#125;&lt;&#x2F;div&gt;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/01/11/methods-of-show-your-photo/" data-id="cklgkcvvq001yvowz9yj3cfgv" data-title="methods of show your photo" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/issues/" rel="tag">issues</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-photo" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/01/11/photo/" class="article-date">
@@ -99,7 +249,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/11/photo/" data-id="ckkzd1swv0021w0wz50mucpuf" data-title="photo" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/11/photo/" data-id="cklgkcvvu0029vowz82j1dhbz" data-title="photo" class="article-share-link">Share</a>
       
       
       
@@ -313,7 +463,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/10/Operation%20System%20day2/" data-id="ckkzd1swf000yw0wz3d310yoj" data-title="Operating System day2" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/10/Operation%20System%20day2/" data-id="cklgkcvvc0011vowz97j37xvc" data-title="Operating System day2" class="article-share-link">Share</a>
       
       
       
@@ -416,7 +566,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/09/Java%20day3/" data-id="ckkzd1svv0004w0wz2v86880f" data-title="Java day3" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/09/Java%20day3/" data-id="cklgkcvuw0004vowz4a7g1sxa" data-title="Java day3" class="article-share-link">Share</a>
       
       
       
@@ -520,7 +670,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/09/network%20of%20computer4/" data-id="ckkzd1swt001ww0wz6egk67xg" data-title="network of computer4" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/09/network%20of%20computer4/" data-id="cklgkcvvt0027vowzhzig1oaj" data-title="network of computer4" class="article-share-link">Share</a>
       
       
       
@@ -653,7 +803,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/09/Operating%20System%20day1/" data-id="ckkzd1swe000vw0wzggvjggaq" data-title="Operating System day1" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/09/Operating%20System%20day1/" data-id="cklgkcvvb000zvowz4bhnerk3" data-title="Operating System day1" class="article-share-link">Share</a>
       
       
       
@@ -708,7 +858,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/08/calligraphy/" data-id="ckkzd1swo001lw0wz0rma559p" data-title="calligraphy day1" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/08/calligraphy/" data-id="cklgkcvvh001gvowzcpycgidu" data-title="calligraphy day1" class="article-share-link">Share</a>
       
       
       
@@ -862,7 +1012,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/08/Java%20day2/" data-id="ckkzd1sus0000w0wzhcgrgpqz" data-title="Java day2" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/08/Java%20day2/" data-id="cklgkcvun0000vowzfhv19vja" data-title="Java day2" class="article-share-link">Share</a>
       
       
       
@@ -1038,144 +1188,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/08/network%20of%20computer3/" data-id="ckkzd1swu001zw0wz45cq577h" data-title="network of computer3" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/08/network%20of%20computer3/" data-id="cklgkcvvs0025vowzfuvr23nc" data-title="network of computer3" class="article-share-link">Share</a>
       
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/" rel="tag">Internet</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-network of computer1" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/01/07/network%20of%20computer1/" class="article-date">
-  <time class="dt-published" datetime="2021-01-07T01:39:18.000Z" itemprop="datePublished">2021-01-07</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/01/07/network%20of%20computer1/">network of computer1</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="网络的网络"><a href="#网络的网络" class="headerlink" title="网络的网络"></a>网络的网络</h1><ul>
-<li>计算机网络 （网络）</li>
-<li> 互联网（网络的网络）</li>
-</ul>
-<blockquote>
-<p>网络中 node-结点  数据结构tree中 node-节点</p>
-</blockquote>
-<ul>
-<li>云两种情况<ul>
-<li>云已经包含了与网络相连的计算机</li>
-<li>云只包含路由器以及和连接这些路由器的链路，把有关的计算机画在云的外面</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>网络把许多计算机连接在一起，互联网则把许多网络通过路由器连接在一起。</p>
-</blockquote>
-<ul>
-<li>ISP（Internet Service Provider）</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">主机A-&gt;本地ISP-&gt;地区ISP-&gt;主干ISP-&gt;地区ISP-&gt;本地ISP-&gt;主机B</span><br></pre></td></tr></table></figure>
-<ul>
-<li>www(World Wide Web)</li>
-</ul>
-<h1 id="互联网标准化工作"><a href="#互联网标准化工作" class="headerlink" title="互联网标准化工作"></a>互联网标准化工作</h1><h2 id="互联网协会ISOC"><a href="#互联网协会ISOC" class="headerlink" title="互联网协会ISOC"></a>互联网协会ISOC</h2><ul>
-<li>互联网研究部 IRTF </li>
-<li>互联网工程部 IETF</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Internet Draft-&gt;Proposed Standard-&gt;Internet Standard</span><br></pre></td></tr></table></figure>
-<h1 id="互联网组成"><a href="#互联网组成" class="headerlink" title="互联网组成"></a>互联网组成</h1><ul>
-<li>互联网边缘部分： 由所有连接互联网的主机组成，用户直接使用，通信与资源共享</li>
-<li>互联网核心部分：由大量网络和连接这些网络的路由器组成，提供连通性和交换</li>
-</ul>
-<blockquote>
-<p>边缘部分的主机又称其为端系统（end system）-&gt;端到端通信</p>
-</blockquote>
-<p>所谓通信：运行在主机A上的某个程序和运行在主机B上的另一个程序进行通信</p>
-<ul>
-<li>客户服务器方式</li>
-<li>对等连接方式（peer to peer简称P2P）指两个主机通信的时候并不区分哪个是服务请求方还是服务提供方，两个主机都运行了P2P软件才可，双方都可以下载对方已经存储在硬盘中的文档</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/07/network%20of%20computer1/" data-id="ckkzd1sww0023w0wzakxkbroe" data-title="network of computer1" class="article-share-link">Share</a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Internet/" rel="tag">Internet</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-Starthere" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/01/05/Starthere/" class="article-date">
-  <time class="dt-published" datetime="2021-01-05T13:26:18.000Z" itemprop="datePublished">2021-01-05</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/01/05/Starthere/">develop-roadmap</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <h1 id="myway–Backend"><a href="#myway–Backend" class="headerlink" title="myway–Backend"></a>myway–Backend</h1><h2 id="learn-one-Programming-Language"><a href="#learn-one-Programming-Language" class="headerlink" title="learn one Programming Language"></a>learn one Programming Language</h2><h3 id="alternative-option"><a href="#alternative-option" class="headerlink" title="alternative option"></a>alternative option</h3><ul>
-<li>Java?</li>
-<li><del>PHP?</del></li>
-<li><del>Python?</del></li>
-<li><del>Rust?</del></li>
-</ul>
-<h3 id="what-I-will-do"><a href="#what-I-will-do" class="headerlink" title="what  I will do?"></a>what  I will do?</h3><ul>
-<li>How does the Internet work?</li>
-<li>What is HTTP?</li>
-<li>Browsers and how they work?</li>
-<li>Following one online course</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/05/Starthere/" data-id="ckkzd1swi0015w0wzceqbdkco" data-title="develop-roadmap" class="article-share-link">Share</a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/start-here/" rel="tag">start here</a></li></ul>
 
     </footer>
   </div>
@@ -1235,6 +1252,14 @@
       <ul>
         
           <li>
+            <a href="/2021/02/18/Java-day17/">Java day17</a>
+          </li>
+        
+          <li>
+            <a href="/2021/02/16/Java-day16/">Java day16</a>
+          </li>
+        
+          <li>
             <a href="/2021/02/09/Java-day15/">Java day15</a>
           </li>
         
@@ -1244,14 +1269,6 @@
         
           <li>
             <a href="/2021/02/04/%E9%A1%B5%E8%A1%A8/">页表</a>
-          </li>
-        
-          <li>
-            <a href="/2021/02/02/Java-day14/">Java day14</a>
-          </li>
-        
-          <li>
-            <a href="/2021/02/01/supervisor-mode/">supervisor mode</a>
           </li>
         
       </ul>
